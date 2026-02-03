@@ -2,124 +2,99 @@
 // КОНФИГУРАЦИЯ
 // ============================
 const config = {
-  // Настройки wrapper
-  wrapperSelector: '.wrapper',
-  
-  // Основная Lottie анимация
-  animationPath: 'https://storage.yandexcloud.net/external-assets/tantum/animations/lottie/jump.json',
-  // НОВЫЕ ПАРАМЕТРЫ ДЛЯ РАЗНЫХ УСТРОЙСТВ
+  wrapperSelector: ".wrapper",
+  animationPath:
+    "https://storage.yandexcloud.net/external-assets/tantum/animations/lottie/jump.json",
+
   animationSize: {
-    desktop: {
-      width: 556,    // Больше на компьютере
-      height: 444
-    },
-    mobile: {
-      width: 292,    // Меньше на мобилке
-      height: 208
-    }
+    desktop: { width: 456, height: 344 },
+    mobile: { width: 292, height: 208 },
   },
-  
-  // Анимация следов снега
+
   snowTrails: {
     enabled: true,
-    lottiePath: 'https://storage.yandexcloud.net/external-assets/tantum/animations/lottie/snow.json',
+    lottiePath:
+      "https://storage.yandexcloud.net/external-assets/tantum/animations/lottie/snow.json",
     size: {
-      desktop: {
-        width: 556,
-        height: 444
-      },
-      mobile: {
-        width: 292,
-        height: 208
-      }
+      desktop: { width: 456, height: 344 },
+      mobile: { width: 292, height: 208 },
     },
     opacity: 1,
-    zIndex: '1001',
+    zIndex: "1001",
     showOnMovement: true,
     fadeInDuration: 500,
     fadeOutDuration: 1000,
     trailDelay: 300,
     reflectWithMain: true,
   },
-  
-  // Скорости движения для разных устройств
+
   movement: {
     enabled: true,
     speeds: {
-      desktop: {
-        horizontal: 120,  // Быстрее на десктопе
-        vertical: 70
-      },
-      mobile: {
-        horizontal: 100,  // Медленнее на мобилке
-        vertical: 60
-      }
+      desktop: { horizontal: 230, vertical: 50 },
+      mobile: { horizontal: 180, vertical: 50 },
     },
     moveInViewport: true,
-    startDelay: 1000, // ЗАДЕРЖКА ПЕРЕД СТАРТОМ ДВИЖЕНИЯ
-    startPosition: { x: 'left', y: 'top' },
+    startDelay: 1000,
+    startPosition: { x: "left", y: "top" },
     bounceAtEdges: true,
     edgeMargin: 0,
+    edgeOverflow: 65, // Глубина ухода за край при движении
     flipAnimation: true,
     flipDuration: 300,
     pauseOnHover: true,
     oneTime: false,
-    
-    // НОВЫЙ ПАРАМЕТР: Перезапуск при достижении низа
-    restartOnBottom: true, // Включить перезапуск
-    restartDelay: 10000,   // Задержка 10 секунд перед перезапуском
-    bottomThreshold: 10,   // Порог для определения "низа" (в пикселях)
+    restartOnBottom: true,
+    restartDelay: 10000,
+    bottomThreshold: 10,
   },
-  
-  // Задержки и тайминги
+
   delays: {
     containerAppearance: 500,
     animationStart: 500,
-    movementStart: 2000, // ЭТО ОБЩАЯ ЗАДЕРЖКА ДО НАЧАЛА ДВИЖЕНИЯ
+    movementStart: 2300,
   },
-  
-  // Стили для контейнера анимации
+
   animationStyles: {
-    pointerEvents: 'none',
-    zIndex: '1001',
-    transformOrigin: 'center center',
-    willChange: 'transform'
-  }
+    pointerEvents: "none",
+    zIndex: "1001",
+    transformOrigin: "center center",
+    willChange: "transform",
+  },
 };
 
 // ============================
 // УТИЛИТЫ ДЛЯ ОПРЕДЕЛЕНИЯ УСТРОЙСТВА
 // ============================
 
-// Функция для определения типа устройства
+ // Функция для определения типа устройства
 function getDeviceType() {
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
-  const isTablet = window.matchMedia('(min-width: 769px) and (max-width: 1024px)').matches;
-  
-  if (isMobile) return 'mobile';
-  if (isTablet) return 'tablet';
-  return 'desktop';
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const isTablet = window.matchMedia(
+    "(min-width: 769px) and (max-width: 1024px)",
+  ).matches;
+  if (isMobile) return "mobile";
+  if (isTablet) return "tablet";
+  return "desktop";
 }
-
 // Функция для получения размеров анимации
 function getAnimationSize() {
   const device = getDeviceType();
   return config.animationSize[device] || config.animationSize.desktop;
 }
-
 // Функция для получения размеров следов снега
 function getSnowTrailsSize() {
   const device = getDeviceType();
   return config.snowTrails.size[device] || config.snowTrails.size.desktop;
 }
-
 // Функция для получения скоростей движения
 function getMovementSpeeds() {
   const device = getDeviceType();
-  const speeds = config.movement.speeds[device] || config.movement.speeds.desktop;
+  const speeds =
+    config.movement.speeds[device] || config.movement.speeds.desktop;
   return {
     horizontalSpeed: speeds.horizontal,
-    verticalSpeed: speeds.vertical
+    verticalSpeed: speeds.vertical,
   };
 }
 
@@ -127,804 +102,498 @@ function getMovementSpeeds() {
 // ОСНОВНОЙ СКРИПТ
 // ============================
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Определяем тип устройства
-  const deviceType = getDeviceType();
-  
+
+document.addEventListener("DOMContentLoaded", function () {
   const wrapper = document.querySelector(config.wrapperSelector);
-  
-  if (!wrapper) {
-    return;
+  if (!wrapper) return;
+
+  // Установка относительного позиционирования для обертки, если оно не задано
+  if (window.getComputedStyle(wrapper).position === "static") {
+    wrapper.style.position = "relative";
   }
-  
-  const wrapperPosition = window.getComputedStyle(wrapper).position;
-  if (wrapperPosition === 'static') {
-    wrapper.style.position = 'relative';
-  }
-  
-  // Получаем размеры для текущего устройства
+
+  // Получение актуальных параметров из конфига в зависимости от устройства
   const animationSize = getAnimationSize();
   const snowTrailsSize = getSnowTrailsSize();
   const movementSpeeds = getMovementSpeeds();
-  
-  // Создаем контейнеры с правильными размерами
+
+  // Создание DOM-элементов для маскота и эффекта снега
   const lottieContainer = createLottieContainer(animationSize);
   const snowTrailsContainer = createSnowTrailsContainer(snowTrailsSize);
-  
+
+  // Цепочка таймаутов для плавного появления маскота на странице
   setTimeout(() => {
     wrapper.appendChild(snowTrailsContainer);
     wrapper.appendChild(lottieContainer);
-    
+
+    // Фиксация элементов относительно вьюпорта (экрана), если включено в конфиге
     if (config.movement.moveInViewport) {
       makeFixedToViewport(lottieContainer);
       makeFixedToViewport(snowTrailsContainer);
     }
-    
+
     setTimeout(() => {
+      // Инициализация Lottie-анимаций (загрузка JSON и запуск плеера)
       const mainAnimation = initLottie(lottieContainer, config.animationPath);
-      const snowAnimation = initLottie(snowTrailsContainer, config.snowTrails.lottiePath, true);
-      
+      const snowAnimation = initLottie(
+        snowTrailsContainer,
+        config.snowTrails.lottiePath,
+        true,
+      );
+
+      // Запуск логики перемещения по экрану после задержки
       if (config.movement.enabled) {
-        // ИСПОЛЬЗУЕМ ЗАДЕРЖКУ ИЗ КОНФИГА
-        const movementDelay = config.delays?.movementStart || config.movement.startDelay;
-        
+        const movementDelay =
+          config.delays?.movementStart || config.movement.startDelay;
         setTimeout(() => {
-          // Передаем размеры и скорости в функцию движения
           startMovementAnimation(
-            lottieContainer, 
-            snowTrailsContainer, 
-            mainAnimation, 
+            lottieContainer,
+            snowTrailsContainer,
+            mainAnimation,
             snowAnimation,
             animationSize,
             snowTrailsSize,
-            movementSpeeds
+            movementSpeeds,
           );
         }, movementDelay);
       }
     }, config.delays.animationStart);
-    
   }, config.delays.containerAppearance);
-  
-  // Функция создания контейнера для основной анимации
+
+  /**
+   * Создает основной контейнер для Lottie маскота.
+   */
   function createLottieContainer(size) {
-    const container = document.createElement('div');
-    container.className = 'lottie-mascot-main';
-    
+    const container = document.createElement("div");
+    container.className = "lottie-mascot-main";
     Object.assign(container.style, {
-      position: 'fixed',
+      position: "fixed",
       width: `${size.width}px`,
       height: `${size.height}px`,
-      opacity: '0',
-      transition: 'opacity 0.5s ease-in',
-      pointerEvents: 'none',
-      ...config.animationStyles
+      opacity: "0",
+      transition: "opacity 0.5s ease-in",
+      pointerEvents: "none",
+      ...config.animationStyles,
     });
-
     return container;
   }
-  
-  // Функция создания контейнера для следов снега
+
+  /**
+   * Создает контейнер для снежного шлейфа, который следует за маскотом.
+   */
   function createSnowTrailsContainer(size) {
     if (!config.snowTrails.enabled) return null;
-    
-    const container = document.createElement('div');
-    container.className = 'snow-trails-container';
-    
+    const container = document.createElement("div");
+    container.className = "snow-trails-container";
     Object.assign(container.style, {
-      position: 'fixed',
+      position: "fixed",
       width: `${size.width}px`,
       height: `${size.height}px`,
-      opacity: '0',
-      pointerEvents: 'none',
+      opacity: "0",
+      pointerEvents: "none",
       zIndex: config.snowTrails.zIndex,
-      transformOrigin: 'center center',
+      transformOrigin: "center center",
       transition: `opacity ${config.snowTrails.fadeInDuration}ms ease-in`,
-      textDecoration: 'none',
-      display: 'block'
+      display: "block",
     });
-    
-    // Эффект при наведении
-    container.addEventListener('mouseenter', function() {
-      container.style.opacity = '0.8';
-    });
-    
-    container.addEventListener('mouseleave', function() {
-      container.style.opacity = config.snowTrails.opacity;
-    });
-    
     return container;
   }
-  
-  // Функция для фиксированного позиционирования в viewport
+
+  /**
+   * Устанавливает начальные CSS свойства для фиксации элемента в окне браузера.
+   */
   function makeFixedToViewport(container) {
     if (!container) return;
-    container.style.position = 'fixed';
-    container.style.left = '0px';
-    container.style.top = '70px';
+    container.style.position = "fixed";
+    container.style.left = "0px";
+    container.style.top = "70px";
   }
-  
-  // Универсальная функция инициализации Lottie
+
+  /**
+   * Инициализирует библиотеку Lottie. Если библиотека не загружена, подгружает её через CDN.
+   */
   function initLottie(container, path, isSnowTrails = false) {
     if (!container) return null;
-    
-    if (typeof lottie === 'undefined') {
-      return loadLottieLibrary(container, path, isSnowTrails);
+    if (typeof lottie === "undefined") {
+      const script = document.createElement("script");
+      script.src =
+        "https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js";
+      script.onload = () => loadAnimation(container, path, isSnowTrails);
+      document.head.appendChild(script);
+      return null;
     }
-    
     return loadAnimation(container, path, isSnowTrails);
   }
-  
-  function loadLottieLibrary(container, path, isSnowTrails) {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js';
-    
-    script.onload = function() {
-      return loadAnimation(container, path, isSnowTrails);
-    };
-    
-    document.head.appendChild(script);
-    return null;
-  }
-  
+
+  /**
+   * Вызывает метод загрузки анимации Lottie и вешает обработчик на появление.
+   */
   function loadAnimation(container, path, isSnowTrails = false) {
-    
     const animation = lottie.loadAnimation({
       container: container,
-      renderer: 'svg',
+      renderer: "svg",
       loop: isSnowTrails,
       autoplay: true,
-      path: path
+      path: path,
     });
-    
-    animation.addEventListener('DOMLoaded', function() {
-      if (!isSnowTrails) {
-        container.style.opacity = '1';
-      }
+    animation.addEventListener("DOMLoaded", () => {
+      if (!isSnowTrails) container.style.opacity = "1";
     });
-    
     return animation;
   }
-  
-  // Функция для анимации движения (обновленная)
+
+  /**
+   * ГЛАВНАЯ ФУНКЦИЯ ДВИЖЕНИЯ
+   * Содержит в себе логику перемещения, отскоков, разворотов и рестарта.
+   */
   function startMovementAnimation(
-    mainContainer, 
-    snowContainer, 
-    mainAnimation, 
+    mainContainer,
+    snowContainer,
+    mainAnimation,
     snowAnimation,
     animationSize,
     snowTrailsSize,
-    movementSpeeds
+    movementSpeeds,
   ) {
+    // Внутренние переменные состояния анимации
     let animationId = null;
-    let lastTimestamp = null;
+    let lastTimestamp = null; // Для расчета deltaTime (плавность)
     let isPaused = false;
-    let isFlipping = false;
+    let isFlipping = false; // Состояние разворота маскота
     let flipStartTime = null;
-    let currentDirection = 'right';
-    let verticalDirection = 'down';
+    let currentDirection = "right"; // Горизонтальное направление
+    let verticalDirection = "down"; // Вертикальное направление
     let flipProgress = 0;
     let animationCompleted = false;
-    
-    // НОВАЯ ПЕРЕМЕННАЯ: флаг для перезапуска
-    let isRestarting = false;
+    let isRestarting = false; // Флаг процесса перезагрузки
     let restartTimeoutId = null;
-    
-    // НОВЫЕ ПЕРЕМЕННЫЕ: сохраняем начальную позицию И ЗАДЕРЖКУ
-    let initialPosition = null;
+    let initialPosition = null; // Сохранение точки старта
     let initialDirection = null;
     let initialScaleX = null;
-    let initialMovementDelay = null; // Сохраняем задержку старта
-    
-    // НОВАЯ ПЕРЕМЕННАЯ: флаг первого проигрывания
+    let initialMovementDelay = null;
     let isFirstPlay = true;
-    
     let snowTrailsVisible = false;
     let snowTrailsShown = false;
     let movementStarted = false;
-    
     let currentX = 0;
     let currentY = 0;
-    let scaleX = 1;
-    let lastFlipTime = 0;
+    let scaleX = 1; // 1 - смотрит вправо, -1 - смотрит влево
+    let lastFlipTime = 0; // Для предотвращения слишком частых разворотов
     const flipCooldown = 300;
-    
-    let enableTeleportation = false;
-    
-    // ПОЛУЧАЕМ СКОРОСТИ ИЗ ПАРАМЕТРОВ
-    const horizontalSpeed = movementSpeeds.horizontalSpeed;
-    const verticalSpeed = movementSpeeds.verticalSpeed;
-    
-    mainContainer.style.opacity = '1';
-    
-    // НОВАЯ ФУНКЦИЯ: Проверка достижения нижней части экрана
+
+    let horizontalSpeed = movementSpeeds.horizontalSpeed;
+    let verticalSpeed = movementSpeeds.verticalSpeed;
+    let currentWindowWidth = window.innerWidth;
+
+    /**
+     * Проверяет, коснулся ли маскот нижней границы экрана.
+     */
     function isAtBottom() {
       const viewportHeight = window.innerHeight;
       const elementHeight = animationSize.height;
-      const bottomThreshold = config.movement.bottomThreshold || 10;
-      
-      return currentY + elementHeight >= viewportHeight - bottomThreshold;
+      return (
+        currentY + elementHeight >=
+        viewportHeight - (config.movement.bottomThreshold || 10)
+      );
     }
-    
-    // НОВАЯ ФУНКЦИЯ: Сохранение начальной позиции И ЗАДЕРЖКИ
+
+    /**
+     * Сохраняет текущие параметры в начальные для будущего рестарта.
+     */
     function saveInitialPosition() {
-      initialPosition = {
-        x: currentX,
-        y: currentY
-      };
+      initialPosition = { x: currentX, y: currentY };
       initialDirection = currentDirection;
       initialScaleX = scaleX;
-      // Сохраняем задержку из конфига
-      initialMovementDelay = config.delays?.movementStart || config.movement.startDelay;
+      initialMovementDelay =
+        config.delays?.movementStart || config.movement.startDelay;
     }
-    
-    // НОВАЯ ФУНКЦИЯ: Восстановление начальной позиции
+
+    /**
+     * Возвращает маскота в точку старта.
+     */
     function restoreInitialPosition() {
       if (!initialPosition) return;
-      
       currentX = initialPosition.x;
       currentY = initialPosition.y;
       currentDirection = initialDirection;
       scaleX = initialScaleX;
-      
       mainContainer.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${scaleX})`;
     }
-    
-    // НОВАЯ ФУНКЦИЯ: Перезапуск анимации С ЗАДЕРЖКОЙ
+
+    /**
+     * Останавливает текущее движение, скрывает маскота и запускает его снова через задержку.
+     */
     function restartAnimation() {
       if (isRestarting || animationCompleted) return;
-    
       isRestarting = true;
-      isFirstPlay = false; // Устанавливаем флаг, что это уже не первый проигрыш
-    
-      // Останавливаем текущую анимацию
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-        animationId = null;
-      }
-      
-      // Скрываем следы снега
-      if (snowContainer && snowTrailsVisible) {
-        hideSnowTrails();
-      }
-      
-      // Скрываем основную анимацию с эффектом исчезновения
-      mainContainer.style.transition = 'opacity 1s ease-out';
-      mainContainer.style.opacity = '0';
-      
-      // Останавливаем Lottie анимацию
-      if (mainAnimation) {
-        mainAnimation.pause();
-      }
-      if (snowAnimation) {
-        snowAnimation.pause();
-      }
-      
-      // Устанавливаем таймер для перезапуска
+      isFirstPlay = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      if (snowContainer && snowTrailsVisible) hideSnowTrails();
+
+      mainContainer.style.transition = "opacity 1s ease-out";
+      mainContainer.style.opacity = "0";
+      if (mainAnimation) mainAnimation.pause();
+      if (snowAnimation) snowAnimation.pause();
+
       restartTimeoutId = setTimeout(() => {
-        
-        // Сбрасываем флаги движения
         movementStarted = false;
         snowTrailsShown = false;
         snowTrailsVisible = false;
         lastTimestamp = null;
         isFlipping = false;
-        flipStartTime = null;
-        
-        // ВОССТАНАВЛИВАЕМ НАЧАЛЬНУЮ ПОЗИЦИЮ
         restoreInitialPosition();
-        
-        // Сбрасываем вертикальное направление
-        verticalDirection = 'down';
-        
-        // Показываем анимацию
-        mainContainer.style.transition = 'opacity 0.8s ease-in';
-        mainContainer.style.opacity = '1';
-        
-        // Перезапускаем Lottie анимацию
-        if (mainAnimation) {
-          mainAnimation.goToAndPlay(0);
-        }
-        if (snowAnimation) {
-          snowAnimation.goToAndPlay(0);
-        }
-        
-        // ЗАПУСКАЕМ ДВИЖЕНИЕ С ЗАДЕРЖКОЙ ТОЛЬКО ПРИ ПЕРЕЗАПУСКЕ (не при первом проигрывании)
-        if (!isFirstPlay) {
-          // ЖДЕМ СОХРАНЕННУЮ ЗАДЕРЖКУ ПЕРЕД НАЧАЛОМ ДВИЖЕНИЯ ТОЛЬКО ПРИ ПЕРЕЗАПУСКЕ
-          setTimeout(() => {
-            isRestarting = false;
-            
-            // Запускаем движение снова
-            animationId = requestAnimationFrame(animate);
-          
-          }, initialMovementDelay);
-        } else {
-          // Если это первый проигрыш, сразу запускаем движение без задержки
+        verticalDirection = "down";
+        mainContainer.style.transition = "opacity 0.8s ease-in";
+        mainContainer.style.opacity = "1";
+        if (mainAnimation) mainAnimation.goToAndPlay(0);
+        if (snowAnimation) snowAnimation.goToAndPlay(0);
 
+        setTimeout(() => {
           isRestarting = false;
           animationId = requestAnimationFrame(animate);
-        }
-        
+        }, initialMovementDelay);
       }, config.movement.restartDelay);
     }
-    
-    function showSnowTrails() {
-      if (!snowContainer || snowTrailsShown || !config.snowTrails.showOnMovement) return;
-      
 
+    /**
+     * Плавно проявляет снежный шлейф при начале движения.
+     */
+    function showSnowTrails() {
+      if (
+        !snowContainer ||
+        snowTrailsShown ||
+        !config.snowTrails.showOnMovement
+      )
+        return;
       snowTrailsShown = true;
-      
-      const snowX = currentX;
-      const snowY = currentY;
-      snowContainer.style.transform = `translate(${snowX}px, ${snowY}px) scaleX(${scaleX})`;
-      
+      snowContainer.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${scaleX})`;
       setTimeout(() => {
         if (snowContainer && !animationCompleted && !isRestarting) {
           snowContainer.style.transition = `opacity ${config.snowTrails.fadeInDuration}ms ease-in`;
           snowContainer.style.opacity = config.snowTrails.opacity;
           snowTrailsVisible = true;
-
         }
       }, config.snowTrails.trailDelay);
     }
-    
+
+    /**
+     * Плавно скрывает снежный шлейф (например, при паузе или рестарте).
+     */
     function hideSnowTrails() {
       if (!snowContainer || !snowTrailsVisible) return;
- 
       snowTrailsVisible = false;
-      
       snowContainer.style.transition = `opacity ${config.snowTrails.fadeOutDuration}ms ease-out`;
-      snowContainer.style.opacity = '0';
-      
+      snowContainer.style.opacity = "0";
       setTimeout(() => {
-        if (snowContainer && !animationCompleted && !snowTrailsVisible && !isRestarting) {
+        if (
+          snowContainer &&
+          !animationCompleted &&
+          !snowTrailsVisible &&
+          !isRestarting
+        ) {
           snowTrailsShown = false;
-
         }
       }, config.snowTrails.fadeOutDuration + 100);
     }
-    
+
+    /**
+     * Устанавливает координаты X и Y в зависимости от настроек старта (слева/справа).
+     */
     function setInitialPosition() {
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const elementWidth = animationSize.width;
-      const elementHeight = animationSize.height;
-      
-      // Используем настройки из конфига
-      if (config.movement.startPosition.x === 'left') {
+      const vw = window.innerWidth;
+      const ew = animationSize.width;
+
+      if (config.movement.startPosition.x === "left") {
         currentX = 0;
-        currentDirection = 'right';
+        currentDirection = "right";
         scaleX = 1;
-      } else if (config.movement.startPosition.x === 'right') {
-        currentX = viewportWidth - elementWidth;
-        currentDirection = 'left';
+      } else if (config.movement.startPosition.x === "right") {
+        currentX = vw - ew;
+        currentDirection = "left";
         scaleX = -1;
-      } else if (config.movement.startPosition.x === 'random') {
-        const startFromLeft = Math.random() > 0.5;
-        if (startFromLeft) {
-          currentX = 20;
-          currentDirection = 'right';
-          scaleX = 1;
-        } else {
-          currentX = viewportWidth - elementWidth - 20;
-          currentDirection = 'left';
-          scaleX = -1;
-        }
       } else {
-        currentX = parseFloat(config.movement.startPosition.x) || 0;
-        currentDirection = 'right';
-        scaleX = 1;
+        currentX = 0;
       }
-      
-      // Начальная позиция Y
-      if (config.movement.startPosition.y === 'random') {
-        currentY = Math.random() * (viewportHeight - elementHeight - 100) + 50;
-      } else if (config.movement.startPosition.y === 'top') {
-        currentY = 20;
-      } else if (config.movement.startPosition.y === 'bottom') {
-        currentY = viewportHeight - elementHeight - 20;
-      } else if (config.movement.startPosition.y === 'center') {
-        currentY = (viewportHeight - elementHeight) / 2;
-      } else {
-        if (typeof config.movement.startPosition.y === 'string' && 
-            config.movement.startPosition.y.includes('%')) {
-          const percent = parseFloat(config.movement.startPosition.y) / 100;
-          currentY = (viewportHeight - elementHeight) * percent;
-        } else {
-          currentY = parseFloat(config.movement.startPosition.y) || 20;
-        }
-      }
-      
-      verticalDirection = 'down';
-      
+
+      currentY = 0;
+      verticalDirection = "down";
       mainContainer.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${scaleX})`;
-      
-      // СОХРАНЯЕМ НАЧАЛЬНУЮ ПОЗИЦИЮ И ЗАДЕРЖКУ
       saveInitialPosition();
-      
     }
-    
+
     setInitialPosition();
-    
-    function shouldBounceHorizontal(x, viewportWidth, elementWidth) {
+
+    /**
+     * Детектор столкновения с левой и правой границей экрана.
+     */
+    function shouldBounceHorizontal(x, vw, ew) {
       if (!config.movement.bounceAtEdges) return false;
-      
-      const edgeMargin = config.movement.edgeMargin;
-      
-      if (currentDirection === 'left' && x <= edgeMargin) {
-        return true;
-      }
-      
-      if (currentDirection === 'right' && x >= viewportWidth - elementWidth - edgeMargin) {
-        return true;
-      }
-      
+      const overflow = config.movement.edgeOverflow;
+      if (currentDirection === "left" && x <= -overflow) return true;
+      if (currentDirection === "right" && x >= vw - ew + overflow) return true;
       return false;
     }
-    
-    function shouldBounceVertical(y, viewportHeight, elementHeight) {
+
+    /**
+     * Детектор столкновения с верхней и нижней границей экрана.
+     */
+    function shouldBounceVertical(y, vh, eh) {
       if (!config.movement.bounceAtEdges) return false;
-      
-      const edgeMargin = config.movement.edgeMargin || 0;
-      
-      if (verticalDirection === 'down' && y >= viewportHeight - elementHeight - edgeMargin) {
-        // Отключаем отскок при достижении низа, если включен перезапуск
-        if (config.movement.restartOnBottom) {
-          return false; // Не отскакиваем, а перезапускаем
-        }
-        return true;
+      if (verticalDirection === "down" && y >= vh - eh) {
+        return !config.movement.restartOnBottom;
       }
-      
-      if (verticalDirection === 'up' && y <= edgeMargin) {
-        return true;
-      }
-      
+      if (verticalDirection === "up" && y <= 0) return true;
       return false;
     }
-    
-    function checkAndTeleportIfNeeded(y, viewportHeight, elementHeight) {
-      // Отключаем телепортацию, так как используем перезапуск
-      return false;
-    }
-    
-    function startFlip() {
-      if (!isFlipping) {
-        isFlipping = true;
-        flipStartTime = performance.now();
-        flipProgress = 0;
-        lastFlipTime = flipStartTime;
-        
-        currentDirection = currentDirection === 'right' ? 'left' : 'right';
-      }
-    }
-    
-    function switchVerticalDirection() {
-      verticalDirection = verticalDirection === 'down' ? 'up' : 'up';
-    }
-    
+
+    /**
+     * Анимация разворота (flip) маскота по горизонтали.
+     * Использует математику плавности (easing).
+     */
     function updateFlip(timestamp) {
       if (!flipStartTime) return false;
-      
       flipProgress = Math.min(
-        (timestamp - flipStartTime) / config.movement.flipDuration, 
-        1
+        (timestamp - flipStartTime) / config.movement.flipDuration,
+        1,
       );
-      
-      const targetScaleX = currentDirection === 'right' ? 1 : -1;
-      
-      const easing = flipProgress < 0.5 
-        ? 2 * flipProgress * flipProgress 
-        : 1 - Math.pow(-2 * flipProgress + 2, 2) / 2;
-      
+      const targetScaleX = currentDirection === "right" ? 1 : -1;
+      const easing =
+        flipProgress < 0.5
+          ? 2 * flipProgress * flipProgress
+          : 1 - Math.pow(-2 * flipProgress + 2, 2) / 2;
       scaleX = scaleX + (targetScaleX - scaleX) * easing;
-      
       mainContainer.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${scaleX})`;
-      
-      if (snowContainer && snowTrailsVisible) {      
-        const snowX = currentX;
-        const snowY = currentY;
-        snowContainer.style.transform = `translate(${snowX}px, ${snowY}px) scaleX(${scaleX})`;
-      }
-      
       if (flipProgress >= 1) {
         isFlipping = false;
         flipStartTime = null;
-        flipProgress = 0;
         scaleX = targetScaleX;
-        
-        mainContainer.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${scaleX})`;
-        
-        if (snowContainer && snowTrailsVisible) {
-          const snowX = currentX;
-          const snowY = currentY;
-          snowContainer.style.transform = `translate(${snowX}px, ${snowY}px) scaleX(${scaleX})`;
-        }
-        
         return false;
       }
-      
       return true;
     }
-    
+
+    /**
+     * Основной расчет координат на каждом кадре.
+     */
     function updatePosition(timestamp) {
       if (!lastTimestamp) {
         lastTimestamp = timestamp;
         return;
       }
-      
+      // Рассчитываем время между кадрами для одинаковой скорости на любых мониторах
       const deltaTime = (timestamp - lastTimestamp) / 1000;
       lastTimestamp = timestamp;
-      
-      // ИСПОЛЬЗУЕМ ПЕРЕДАННЫЕ СКОРОСТИ
-      const horizontalDistance = horizontalSpeed * deltaTime;
-      const verticalDistance = verticalSpeed * deltaTime;
-      
-      const moved = Math.abs(horizontalDistance) > 0.1 || Math.abs(verticalDistance) > 0.1;
-      
-      if (moved && !movementStarted) {
+
+      // Приращение координат
+      currentX +=
+        (currentDirection === "right" ? horizontalSpeed : -horizontalSpeed) *
+        deltaTime;
+      currentY +=
+        (verticalDirection === "down" ? verticalSpeed : -verticalSpeed) *
+        deltaTime;
+
+      if (!movementStarted) {
         movementStarted = true;
         showSnowTrails();
       }
-      
-      if (!moved && movementStarted && snowTrailsVisible) {
-        hideSnowTrails();
-      }
-      
-      if (moved && movementStarted && !snowTrailsVisible && !snowTrailsShown) {
-        showSnowTrails();
-      }
-      
-      if (currentDirection === 'right') {
-        currentX += horizontalDistance;
-      } else {
-        currentX -= horizontalDistance;
-      }
-      
-      if (verticalDirection === 'down') {
-        currentY += verticalDistance;
-      } else {
-        currentY -= verticalDistance;
-      }
-      
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const elementWidth = animationSize.width;
-      const elementHeight = animationSize.height;
-      
-      // НОВАЯ ПРОВЕРКА: Если достигли низа и включен перезапуск
+
+      // Если маскот упал вниз — запускаем рестарт
       if (config.movement.restartOnBottom && isAtBottom() && !isRestarting) {
         restartAnimation();
-        return; // Прекращаем обновление позиции
-      }
-      
-      const wasTeleported = checkAndTeleportIfNeeded(currentY, viewportHeight, elementHeight);
-      
-      if (!wasTeleported) {
-        const shouldBounceHorizontally = shouldBounceHorizontal(currentX, viewportWidth, elementWidth);
-        const shouldBounceVertically = shouldBounceVertical(currentY, viewportHeight, elementHeight);
-        
-        if (shouldBounceHorizontally && 
-            !isFlipping && 
-            (timestamp - lastFlipTime) > flipCooldown) {
-          
-          startFlip();
-          
-          if (currentDirection === 'right') {
-            currentX = Math.max(currentX, 0);
-          } else {
-            currentX = Math.min(currentX, viewportWidth - elementWidth);
-          }
-        }
-        
-        if (shouldBounceVertically && (timestamp - lastFlipTime) > flipCooldown) {
-          switchVerticalDirection();
-          
-          const edgeMargin = config.movement.edgeMargin || 0;
-          if (verticalDirection === 'down') {
-            currentY = Math.max(currentY, edgeMargin);
-          } else {
-            currentY = Math.min(currentY, viewportHeight - elementHeight - edgeMargin);
-          }
-        }
-      }
-      
-      if (!wasTeleported && !isRestarting) {
-        currentX = Math.max(0, Math.min(currentX, viewportWidth - elementWidth));
-        currentY = Math.max(0, Math.min(currentY, viewportHeight - elementHeight));
-      }
-      
-      mainContainer.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${scaleX})`;
-      
-      if (snowContainer && snowTrailsVisible) {      
-        const snowX = currentX;
-        const snowY = currentY;
-        snowContainer.style.transform = `translate(${snowX}px, ${snowY}px) scaleX(${scaleX})`;
-      }
-    }
-    
-    function checkAnimationCompletion() {
-      if (animationCompleted || !config.movement.oneTime) return false;
-      
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const elementWidth = animationSize.width;
-      const elementHeight = animationSize.height;
-      
-      const isOutOfBounds = 
-        currentX + elementWidth < 0 ||
-        currentX > viewportWidth ||
-        currentY + elementHeight < 0 ||
-        currentY > viewportHeight;
-      
-      if (isOutOfBounds) {
-        animationCompleted = true;
-        
-        if (snowContainer && snowTrailsVisible) {
-          hideSnowTrails();
-        }
-        
-        mainContainer.style.transition = 'opacity 0.8s ease-out';
-        mainContainer.style.opacity = '0';
-        
-        setTimeout(() => {
-          if (animationId) {
-            cancelAnimationFrame(animationId);
-            animationId = null;
-          }
-        }, 1000);
-        
-        return true;
-      }
-      
-      return false;
-    }
-    
-    // Функция анимации движения (запускается только после задержки)
-    function startMovement() {
-      animationId = requestAnimationFrame(animate);
-    }
-    
-    function animate(timestamp) {
-      if (isPaused || animationCompleted || isRestarting) {
-        if (!animationCompleted && !isRestarting) {
-          animationId = requestAnimationFrame(animate);
-        }
         return;
       }
-      
-      if (isFlipping) {
-        const stillFlipping = updateFlip(timestamp);
-        if (stillFlipping) {
-          updatePosition(timestamp);
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const ew = animationSize.width;
+      const eh = animationSize.height;
+      const overflow = config.movement.edgeOverflow;
+
+      // Обработка горизонтального отскока и запуска разворота
+      if (
+        shouldBounceHorizontal(currentX, vw, ew) &&
+        !isFlipping &&
+        timestamp - lastFlipTime > flipCooldown
+      ) {
+        isFlipping = true;
+        flipStartTime = timestamp;
+        lastFlipTime = timestamp;
+        currentDirection = currentDirection === "right" ? "left" : "right";
+      }
+
+      // Обработка вертикального отскока
+      if (shouldBounceVertical(currentY, vh, eh)) {
+        verticalDirection = verticalDirection === "down" ? "up" : "down";
+      }
+
+      // Ограничение координат, чтобы маскот не улетал в бесконечность
+      currentX = Math.max(-overflow, Math.min(currentX, vw - ew + overflow));
+      currentY = Math.max(0, Math.min(currentY, vh - eh));
+
+      // Применение трансформации к DOM
+      mainContainer.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${scaleX})`;
+      if (snowContainer && snowTrailsVisible) {
+        snowContainer.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${scaleX})`;
+      }
+    }
+
+    /**
+     * Цикл анимации через RequestAnimationFrame.
+     */
+    function animate(timestamp) {
+      if (isPaused || animationCompleted || isRestarting) {
+        if (!animationCompleted && !isRestarting)
           animationId = requestAnimationFrame(animate);
-          return;
-        }
+        return;
       }
-      
+      if (isFlipping) updateFlip(timestamp);
       updatePosition(timestamp);
-      
-      checkAnimationCompletion();
-      
-      if (!animationCompleted && !isRestarting) {
+      if (!animationCompleted && !isRestarting)
         animationId = requestAnimationFrame(animate);
-      }
     }
-    
-    // ЗАПУСКАЕМ АНИМАЦИЮ С ЗАДЕРЖКОЙ (только при первом проигрывании)
-    // Этот код должен работать только при первом проигрывании
-    if (isFirstPlay) {
-      startMovement();
-    }
-    
+
+    // Первый запуск цикла
+    if (isFirstPlay) animationId = requestAnimationFrame(animate);
+
+    // Слушатели событий для паузы при наведении
     if (config.movement.pauseOnHover) {
-      mainContainer.addEventListener('mouseenter', () => {
+      mainContainer.addEventListener("mouseenter", () => {
         isPaused = true;
-        mainContainer.style.filter = 'brightness(0.8) saturate(0.8)';
-        mainContainer.style.transition = 'filter 0.3s';
-        
-        if (snowContainer && snowTrailsVisible) {
-          hideSnowTrails();
-        }
+        hideSnowTrails();
       });
-      
-      mainContainer.addEventListener('mouseleave', () => {
+      mainContainer.addEventListener("mouseleave", () => {
         isPaused = false;
-        mainContainer.style.filter = 'brightness(1) saturate(1)';
-        
-        if (movementStarted && !snowTrailsVisible && !snowTrailsShown) {
-          showSnowTrails();
-        }
+        showSnowTrails();
       });
     }
-    
-    // window.addEventListener('resize', () => {
-    //   if (animationCompleted) return;
-      
-    //   // Отменяем таймер перезапуска при ресайзе
-    //   if (restartTimeoutId) {
-    //     clearTimeout(restartTimeoutId);
-    //     restartTimeoutId = null;
-    //   }
-      
-    //   // Отменяем текущую анимацию
-    //   if (animationId) {
-    //     cancelAnimationFrame(animationId);
-    //     animationId = null;
-    //   }
-      
-    //   // ПЕРЕОПРЕДЕЛЯЕМ РАЗМЕРЫ ПРИ ИЗМЕНЕНИИ ОКНА
-    //   const newAnimationSize = getAnimationSize();
-    //   const newSnowTrailsSize = getSnowTrailsSize();
-    //   const newMovementSpeeds = getMovementSpeeds();
-      
-    //   // Обновляем размеры контейнеров
-    //   mainContainer.style.width = `${newAnimationSize.width}px`;
-    //   mainContainer.style.height = `${newAnimationSize.height}px`;
-      
-    //   if (snowContainer) {
-    //     snowContainer.style.width = `${newSnowTrailsSize.width}px`;
-    //     snowContainer.style.height = `${newSnowTrailsSize.height}px`;
-    //   }
-      
-    //   // Обновляем скорости
-    //   horizontalSpeed = newMovementSpeeds.horizontalSpeed;
-    //   verticalSpeed = newMovementSpeeds.verticalSpeed;
-    
-      
-    //   // Сбрасываем флаг перезапуска
-    //   isRestarting = false;
-      
-    //   // Перезапускаем движение с текущей позиции
-    //   lastTimestamp = null;
-    //   animationId = requestAnimationFrame(animate);
-    // });
 
-    // В начало startMovementAnimation добавь:
-let currentWindowWidth = window.innerWidth;
+    /**
+     * Пересчет параметров при изменении размера окна (Resize).
+     */
+    window.addEventListener("resize", () => {
+      if (animationCompleted) return;
+      const newWidth = window.innerWidth;
+      if (newWidth === currentWindowWidth) return;
+      currentWindowWidth = newWidth;
 
-// Обновленный обработчик
-window.addEventListener('resize', () => {
-  if (animationCompleted) return;
+      if (restartTimeoutId) clearTimeout(restartTimeoutId);
+      const newSize = getAnimationSize();
+      const newSpeeds = getMovementSpeeds();
 
-  const newWidth = window.innerWidth;
+      // Обновляем размеры контейнеров
+      mainContainer.style.width = `${newSize.width}px`;
+      mainContainer.style.height = `${newSize.height}px`;
+      if (snowContainer) {
+        snowContainer.style.width = `${newSize.width}px`;
+        snowContainer.style.height = `${newSize.height}px`;
+      }
 
-  // Если ширина не изменилась — выходим (игнорируем изменение высоты)
-  if (newWidth === currentWindowWidth) return;
-
-  // Если ширина изменилась, обновляем эталонное значение
-  currentWindowWidth = newWidth;
-
-  // Отменяем таймер перезапуска
-  if (restartTimeoutId) {
-    clearTimeout(restartTimeoutId);
-    restartTimeoutId = null;
-  }
-
-  // Обновляем параметры размеров и скоростей
-  const newAnimationSize = getAnimationSize();
-  const newSnowTrailsSize = getSnowTrailsSize();
-  const newMovementSpeeds = getMovementSpeeds();
-
-  // Обновляем стили контейнеров
-  mainContainer.style.width = `${newAnimationSize.width}px`;
-  mainContainer.style.height = `${newAnimationSize.height}px`;
-
-  if (snowContainer) {
-    snowContainer.style.width = `${newSnowTrailsSize.width}px`;
-    snowContainer.style.height = `${newSnowTrailsSize.height}px`;
-  }
-
-  // Обновляем переменные скоростей (убедись, что они объявлены через let, а не const)
-  horizontalSpeed = newMovementSpeeds.horizontalSpeed;
-  verticalSpeed = newMovementSpeeds.verticalSpeed;
-
-  // Сбрасываем флаг перезапуска, если он висел
-  isRestarting = false;
-
-  // Перезапускаем цикл анимации
-  if (animationId) cancelAnimationFrame(animationId);
-  lastTimestamp = null;
-  animationId = requestAnimationFrame(animate);
-});
+      horizontalSpeed = newSpeeds.horizontalSpeed;
+      verticalSpeed = newSpeeds.verticalSpeed;
+      isRestarting = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      lastTimestamp = null;
+      animationId = requestAnimationFrame(animate);
+    });
   }
 });
