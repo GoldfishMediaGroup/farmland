@@ -1,35 +1,33 @@
 (function () {
-  "use strict";
+  'use strict';
 
   const config = {
     videos: {
       mobile: {
-        src: "https://storage.yandexcloud.net/external-assets/tantum/modal-game/mobile.mp4",
-        type: "video/mp4",
-        pausePoints: [4.3, 10, 15, 20.5],
+        src: 'https://storage.yandexcloud.net/external-assets/tantum/modal-game/mobile.mp4',
+        type: 'video/mp4',
+        pausePoints: [4.3, 10, 15, 20.5]
       },
       desktop: {
-        src: "https://storage.yandexcloud.net/external-assets/tantum/modal-game/desktop.mp4",
-        type: "video/mp4",
-        pausePoints: [4.3, 10, 15, 20.5],
-      },
+        src: 'https://storage.yandexcloud.net/external-assets/tantum/modal-game/desktop.mp4',
+        type: 'video/mp4',
+        pausePoints: [4.3, 10, 15, 20.5]
+      }
     },
     buttonStyles: {
       desktop: {
-        width: "130px",
-        height: "130px",
+        width: '130px',
+        height: '130px'
       },
       mobile: {
-        width: "130px",
-        height: "130px",
+        width: '130px',
+        height: '130px'
       },
-      imageUrl:
-        "https://storage.yandexcloud.net/external-assets/tantum/modal-game/circle.png",
-      videoUrl:
-        "https://storage.yandexcloud.net/external-assets/tantum/modal-game/hello.png",
+      imageUrl: 'https://storage.yandexcloud.net/external-assets/tantum/modal-game/circle.png',
+      videoUrl: 'https://storage.yandexcloud.net/external-assets/tantum/modal-game/hello.png'
     },
-    modalOverlayColor: "rgba(0, 0, 0, 0.7)",
-    modalBackground: "transparent",
+    modalOverlayColor: 'rgba(0, 0, 0, 0.7)',
+    modalBackground: 'transparent'
   };
 
   let videoButton = null;
@@ -43,7 +41,7 @@
   let isVideoFinished = false;
 
   function getDeviceType() {
-    return window.innerWidth <= 768 ? "mobile" : "desktop";
+    return window.innerWidth <= 768 ? 'mobile' : 'desktop';
   }
 
   function getButtonSize() {
@@ -51,7 +49,7 @@
     return config.buttonStyles[device];
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener('DOMContentLoaded', function () {
     init();
   });
 
@@ -61,94 +59,94 @@
     setupEventListeners();
 
     const isMobile = window.innerWidth <= 768;
-    currentVideoConfig = config.videos[isMobile ? "mobile" : "desktop"];
-    const source = document.createElement("source");
+    currentVideoConfig = config.videos[isMobile ? 'mobile' : 'desktop'];
+    const source = document.createElement('source');
     source.src = currentVideoConfig.src;
     source.type = currentVideoConfig.type;
-    videoElement.innerHTML = "";
+    videoElement.innerHTML = '';
     videoElement.appendChild(source);
 
-    videoElement.addEventListener("loadedmetadata", function () {
+    videoElement.addEventListener('loadedmetadata', function () {
       videoAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
       updateModalSize();
     });
   }
 
   function createVideoButton() {
-    videoButton = document.createElement("button");
-    videoButton.id = "video-modal-trigger";
+    videoButton = document.createElement('button');
+    videoButton.id = 'video-modal-trigger';
 
     const buttonSize = getButtonSize();
 
-    const buttonDiv = document.createElement("div");
-    buttonDiv.className = "video-button-content";
+    const buttonDiv = document.createElement('div');
+    buttonDiv.className = 'video-button-content';
 
-    const buttonImg = document.createElement("img");
+    const buttonImg = document.createElement('img');
     buttonImg.src = config.buttonStyles.imageUrl;
-    buttonImg.alt = "Play video";
-    buttonImg.loading = "lazy";
-    buttonImg.className = "button-background-image";
+    buttonImg.alt = 'Play video';
+    buttonImg.loading = 'lazy';
+    buttonImg.className = 'button-background-image';
 
-    buttonVideoElement = document.createElement("video");
-    buttonVideoElement.className = "button-overlay-video";
+    buttonVideoElement = document.createElement('video');
+    buttonVideoElement.className = 'button-overlay-video';
     buttonVideoElement.muted = true;
     buttonVideoElement.loop = true;
     buttonVideoElement.playsInline = true;
     buttonVideoElement.autoplay = true;
 
-    const videoSource = document.createElement("source");
-    videoSource.src = config.buttonStyles.videoUrl.replace(".png", ".mp4");
-    videoSource.type = "video/mp4";
+    const videoSource = document.createElement('source');
+    videoSource.src = config.buttonStyles.videoUrl.replace('.png', '.mp4');
+    videoSource.type = 'video/mp4';
     buttonVideoElement.appendChild(videoSource);
 
     Object.assign(buttonImg.style, {
-      width: "100%",
-      height: "100%",
-      objectFit: "contain",
-      display: "block",
-      position: "absolute",
-      top: "0",
-      left: "0",
-      zIndex: "1",
+      width: '100%',
+      height: '100%',
+      objectFit: 'contain',
+      display: 'block',
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      zIndex: '1'
     });
 
     Object.assign(buttonVideoElement.style, {
-      width: "80%",
-      height: "70%",
-      objectFit: "contain",
-      position: "absolute",
-      top: "10%",
-      left: "10%",
-      zIndex: "2",
-      borderRadius: "50%",
-      pointerEvents: "none",
+      width: '80%',
+      height: '70%',
+      objectFit: 'contain',
+      position: 'absolute',
+      top: '10%',
+      left: '10%',
+      zIndex: '2',
+      borderRadius: '50%',
+      pointerEvents: 'none'
     });
 
     Object.assign(buttonDiv.style, {
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      overflow: "hidden",
-      position: "relative",
-      borderRadius: "50%",
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      position: 'relative',
+      borderRadius: '50%'
     });
 
     Object.assign(videoButton.style, {
-      position: "fixed",
-      bottom: "110px",
-      right: "20px",
+      position: 'fixed',
+      bottom: '110px',
+      right: '20px',
       width: buttonSize.width,
       height: buttonSize.height,
-      backgroundColor: "transparent",
-      border: "none",
-      cursor: "pointer",
-      borderRadius: "50%",
-      zIndex: "1039",
-      boxShadow: "0px 0px 50px rgba(0, 0, 0, 0.3)",
-      overflow: "hidden",
-      padding: "0",
+      backgroundColor: 'transparent',
+      border: 'none',
+      cursor: 'pointer',
+      borderRadius: '50%',
+      zIndex: '1039',
+      boxShadow: '0px 0px 50px rgba(0, 0, 0, 0.3)',
+      overflow: 'hidden',
+      padding: '0'
     });
 
     buttonDiv.appendChild(buttonImg);
@@ -160,9 +158,9 @@
     setTimeout(() => {
       if (buttonVideoElement) {
         buttonVideoElement.play().catch((e) => {
-          const fallbackImg = document.createElement("img");
+          const fallbackImg = document.createElement('img');
           fallbackImg.src = config.buttonStyles.videoUrl;
-          fallbackImg.alt = "Play video";
+          fallbackImg.alt = 'Play video';
           fallbackImg.style.cssText = buttonVideoElement.style.cssText;
           buttonVideoElement.replaceWith(fallbackImg);
         });
@@ -171,95 +169,95 @@
   }
 
   function createModal() {
-    modalOverlay = document.createElement("div");
-    modalOverlay.id = "video-modal-overlay";
+    modalOverlay = document.createElement('div');
+    modalOverlay.id = 'video-modal-overlay';
 
     Object.assign(modalOverlay.style, {
-      position: "fixed",
-      top: "0",
-      left: "0",
-      width: "100%",
-      height: "100%",
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
       backgroundColor: config.modalOverlayColor,
-      display: "none",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: "1101",
-      opacity: "0",
-      transition: "opacity 0.3s ease",
-      cursor: "pointer",
+      display: 'none',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: '1101',
+      opacity: '0',
+      transition: 'opacity 0.3s ease',
+      cursor: 'pointer'
     });
 
-    const modalContent = document.createElement("div");
-    modalContent.id = "video-modal-content";
+    const modalContent = document.createElement('div');
+    modalContent.id = 'video-modal-content';
 
     Object.assign(modalContent.style, {
       backgroundColor: config.modalBackground,
-      borderRadius: "12px",
-      overflow: "hidden",
-      position: "relative",
-      transform: "translateY(30px)",
-      transition: "transform 0.3s ease",
-      cursor: "default",
-      maxWidth: "90vw",
-      maxHeight: "90vh",
+      borderRadius: '12px',
+      overflow: 'hidden',
+      position: 'relative',
+      transform: 'translateY(30px)',
+      transition: 'transform 0.3s ease',
+      cursor: 'default',
+      maxWidth: '90vw',
+      maxHeight: '90vh'
     });
 
-    const closeButton = document.createElement("button");
-    closeButton.id = "video-modal-close";
-    closeButton.title = "Закрыть";
-    closeButton.setAttribute("aria-label", "Закрыть видео");
-    closeButton.innerHTML = "×";
+    const closeButton = document.createElement('button');
+    closeButton.id = 'video-modal-close';
+    closeButton.title = 'Закрыть';
+    closeButton.setAttribute('aria-label', 'Закрыть видео');
+    closeButton.innerHTML = '×';
 
     Object.assign(closeButton.style, {
-      position: "absolute",
-      top: "10px",
-      right: "10px",
-      width: "30px",
-      height: "30px",
+      position: 'absolute',
+      top: '10px',
+      right: '10px',
+      width: '30px',
+      height: '30px',
       display: 'flex',
       flexShrink: 0,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      color: "white",
-      border: "none",
-      borderRadius: "50%",
-      cursor: "pointer",
-      fontSize: "20px",
-      lineHeight: "100%",
-      textAlign: "center",
-      zIndex: "1101",
-      transition: "background-color 0.3s ease",
-      padding: 0,
-
-
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '50%',
+      cursor: 'pointer',
+      fontSize: '20px',
+      lineHeight: '100%',
+      textAlign: 'center',
+      zIndex: '1101',
+      transition: 'background-color 0.3s ease',
+      padding: 0
     });
 
-    closeButton.addEventListener("mouseenter", function () {
-      closeButton.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+    closeButton.addEventListener('mouseenter', function () {
+      closeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     });
 
-    closeButton.addEventListener("mouseleave", function () {
-      closeButton.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    closeButton.addEventListener('mouseleave', function () {
+      closeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     });
 
-    videoElement = document.createElement("video");
-    videoElement.className = "modal-video";
+    videoElement = document.createElement('video');
+    videoElement.className = 'modal-video';
     videoElement.playsInline = true;
     videoElement.muted = true;
-    videoElement.play();
+    videoElement.preload = 'auto';
     videoElement.disableRemotePlayback = true;
     videoElement.disablePictureInPicture = true;
     videoElement.controls = false;
 
+    // videoElement.play();
+
     Object.assign(videoElement.style, {
-      width: "100%",
-      height: "100%",
-      display: "block",
-      cursor: "pointer",
-      backgroundColor: "#000",
+      width: '100%',
+      height: '100%',
+      display: 'block',
+      cursor: 'pointer',
+      backgroundColor: '#000'
     });
 
     modalContent.appendChild(closeButton);
@@ -271,7 +269,7 @@
   }
 
   function updateModalSize() {
-    const modalContent = document.getElementById("video-modal-content");
+    const modalContent = document.getElementById('video-modal-content');
     if (!modalContent || !videoAspectRatio) return;
 
     const maxWidth = window.innerWidth * 0.9;
@@ -290,7 +288,7 @@
   }
 
   function addResponsiveStyles() {
-    const style = document.createElement("style");
+    const style = document.createElement('style');
     style.textContent = `
             @media (max-width: 768px) {
                 #video-modal-trigger {
@@ -343,44 +341,44 @@
   }
 
   function setupEventListeners() {
-    videoButton.addEventListener("click", openModal);
+    videoButton.addEventListener('click', openModal);
 
-    const closeButton = document.getElementById("video-modal-close");
-    closeButton.addEventListener("click", closeModal);
+    const closeButton = document.getElementById('video-modal-close');
+    closeButton.addEventListener('click', closeModal);
 
-    modalOverlay.addEventListener("click", function (e) {
+    modalOverlay.addEventListener('click', function (e) {
       if (e.target === modalOverlay) {
         closeModal();
       }
     });
 
-    videoElement.addEventListener("click", handleVideoClick);
+    videoElement.addEventListener('click', handleVideoClick);
 
-    videoElement.addEventListener("timeupdate", handleTimeUpdate);
-    videoElement.addEventListener("ended", handleVideoEnded);
+    videoElement.addEventListener('timeupdate', handleTimeUpdate);
+    videoElement.addEventListener('ended', handleVideoEnded);
 
-    videoElement.addEventListener("loadedmetadata", function () {
-      if (modalOverlay.style.display === "flex") {
+    videoElement.addEventListener('loadedmetadata', function () {
+      if (modalOverlay.style.display === 'flex') {
         updateModalSize();
       }
     });
 
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && modalOverlay.style.display === "flex") {
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
         closeModal();
       }
     });
 
-    window.addEventListener("resize", function () {
+    window.addEventListener('resize', function () {
       updateButtonSize();
 
-      if (modalOverlay.style.display === "flex") {
+      if (modalOverlay.style.display === 'flex') {
         updateModalSize();
         handleResize();
       }
     });
 
-    videoElement.addEventListener("contextmenu", function (e) {
+    videoElement.addEventListener('contextmenu', function (e) {
       e.preventDefault();
       return false;
     });
@@ -389,47 +387,46 @@
   function openModal() {
     isVideoFinished = false;
 
-    modalOverlay.style.display = "flex";
+    modalOverlay.style.display = 'flex';
     setTimeout(() => {
-      modalOverlay.style.opacity = "1";
-      document.getElementById("video-modal-content").style.transform =
-        "translateY(0)";
+      modalOverlay.style.opacity = '1';
+      document.getElementById('video-modal-content').style.transform = 'translateY(0)';
     }, 10);
 
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
 
     currentPauseIndex = -1;
     isPausedBySystem = false;
 
     updateModalSize();
+    videoElement.play();
+    // if (videoElement.readyState >= 2) {
+    //   videoElement.currentTime = 0;
+    //   setTimeout(() => {
+    //     videoElement.play();
+    //   }, 300);
 
-    if (videoElement.readyState >= 2) {
-      videoElement.currentTime = 0;
-      setTimeout(() => {
-        videoElement.play();
-      }, 300);
-
-      videoElement.play().catch((e) => console.log("Блокировка Safari:", e));
-    } else {
-      const playAfterLoad = function () {
-        videoElement.removeEventListener("loadeddata", playAfterLoad);
-        setTimeout(() => {
-          videoElement.play();
-        }, 300);
-      };
-      videoElement.addEventListener("loadeddata", playAfterLoad);
-    }
+    //   videoElement.play().catch((e) => console.log("Блокировка Safari:", e));
+    // } else {
+    //   const playAfterLoad = function () {
+    //     videoElement.removeEventListener("loadeddata", playAfterLoad);
+    //     setTimeout(() => {
+    //       videoElement.play();
+    //     }, 300);
+    //   };
+    //   videoElement.addEventListener("loadeddata", playAfterLoad);
+    // }
   }
 
   function closeModal() {
-    modalOverlay.style.opacity = "0";
-    document.getElementById("video-modal-content").style.transform =
-      "translateY(30px)";
+    modalOverlay.style.opacity = '0';
+    document.getElementById('video-modal-content').style.transform = 'translateY(30px)';
 
     setTimeout(() => {
-      modalOverlay.style.display = "none";
+      modalOverlay.style.display = 'none';
+      videoElement.currentTime = 0;
       videoElement.pause();
-      document.body.style.overflow = "";
+      document.body.style.overflow = '';
     }, 300);
   }
 
@@ -450,11 +447,7 @@
     const currentTime = videoElement.currentTime;
 
     if (!isVideoFinished) {
-      for (
-        let i = currentPauseIndex + 1;
-        i < currentVideoConfig.pausePoints.length;
-        i++
-      ) {
+      for (let i = currentPauseIndex + 1; i < currentVideoConfig.pausePoints.length; i++) {
         const pausePoint = currentVideoConfig.pausePoints[i];
 
         if (currentTime >= pausePoint) {
@@ -489,25 +482,22 @@
   }
 
   function handleResize() {
-    if (modalOverlay.style.display === "flex") {
+    if (modalOverlay.style.display === 'flex') {
       const isMobile = window.innerWidth <= 768;
-      const newVideoConfig = config.videos[isMobile ? "mobile" : "desktop"];
+      const newVideoConfig = config.videos[isMobile ? 'mobile' : 'desktop'];
 
       if (currentVideoConfig !== newVideoConfig) {
         const wasPlaying = !videoElement.paused && !isVideoFinished;
         const currentTime = videoElement.currentTime;
 
-        const source = document.createElement("source");
+        const source = document.createElement('source');
         source.src = newVideoConfig.src;
         source.type = newVideoConfig.type;
-        videoElement.innerHTML = "";
+        videoElement.innerHTML = '';
         videoElement.appendChild(source);
         videoElement.load();
 
-        videoElement.currentTime = Math.min(
-          currentTime,
-          videoElement.duration || 0,
-        );
+        videoElement.currentTime = Math.min(currentTime, videoElement.duration || 0);
         currentVideoConfig = newVideoConfig;
         currentPauseIndex = -1;
         isPausedBySystem = false;
