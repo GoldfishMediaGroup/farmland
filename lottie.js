@@ -4,7 +4,8 @@
 const config = {
   wrapperSelector: ".wrapper",
   animationPath:
-    "https://storage.yandexcloud.net/external-assets/tantum/animations/lottie/jump.json",
+    // "https://storage.yandexcloud.net/external-assets/tantum/animations/lottie/jump.json",
+     "./animations/lottie/skate.json",
 
   animationSize: {
     desktop: { width: 456, height: 344 },
@@ -553,7 +554,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Первый запуск цикла
-    if (isFirstPlay) animationId = requestAnimationFrame(animate);
+    // if (isFirstPlay) animationId = requestAnimationFrame(animate);
 
     // Слушатели событий для паузы при наведении
     if (config.movement.pauseOnHover) {
